@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
-const orderSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
-        required: true,
-    },
+const cartSchema = new mongoose.Schema({
     restaurantId: {
         type: mongoose.Schema.ObjectId,
         ref: 'Restaurant',
@@ -25,21 +20,16 @@ const orderSchema = new mongoose.Schema({
                 }
             }
         }],
-        required: true
+        required: false
     },
     amount: {
         type: Number,
-        required: true
+        required: false
     },
-    pending: {
-        type: Boolean,
-        required: true,
-        default: true
-    }
 
 }, {
     timestamps: true
 });
 
-const Order = new mongoose.model('Order', orderSchema);
-module.exports = Order;
+// const Cart = new mongoose.model('Cart', cartSchema);
+module.exports = cartSchema;
