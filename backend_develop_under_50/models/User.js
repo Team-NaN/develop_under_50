@@ -19,17 +19,6 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
-    password: {
-        type: String,
-        required: false,
-        trim: true,
-        minlength: 7,
-        validate(value) {
-            if (value.toLowerCase().includes('password')) {
-                throw new Error('Password Must not include the word "password"');
-            }
-        }
-    },
     profile: {
         type: string,
         required: false
@@ -39,24 +28,24 @@ const userSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: true
+        required: false
     },
     city: {
         type: String,
-        required: true
+        required: false
     },
     state: {
         type: String,
-        required: true
+        required: false
     },
     country: {
         type: String,
-        required: true
+        required: false
     },
     location: {
         type: pointSchema,
         index: '2dsphere',
-        required: true
+        required: false
     }
 }, {
     timestamps: true

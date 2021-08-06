@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const pointSchema = require('./GeoPoint');
 const restaurantSchema = new mongoose.Schema({
-
     name: {
         type: String,
         required: true,
@@ -18,41 +17,30 @@ const restaurantSchema = new mongoose.Schema({
             }
         }
     },
-    password: {
-        type: String,
-        required: false,
-        trim: true,
-        minlength: 7,
-        validate(value) {
-            if (value.toLowerCase().includes('password')) {
-                throw new Error('Password Must not include the word "password"');
-            }
-        }
-    },
     profile: {
         type: String,
         required: false
     },
     address: {
         type: String,
-        required: true
+        required: false
     },
     city: {
         type: String,
-        required: true
+        required: false
     },
     state: {
         type: String,
-        required: true
+        required: false
     },
     country: {
         type: String,
-        required: true
+        required: false
     },
     location: {
         type: pointSchema,
         index: '2dsphere',
-        required: true
+        required: false
     }
 }, {
     timestamps: true
