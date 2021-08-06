@@ -1,14 +1,14 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
-
+const { parseCookies } = require('../Utils/parseCookies');
 
 const auth = async (req, res, next) => {
 
     try {
 
         const token = parseCookies(req).accessToken;
-        const decoded = await jwt.verify(token, configurations.JWT_SECRET, { algorithm: "HS256" });
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET, { algorithm: "HS256" });
         if (decoded.role === 'restaurant') {
             const restaurant = await Restaurant.findOne({ _id: decoded.id });
             if (!restaurant) {
