@@ -31,6 +31,7 @@ export const signup = (userType, name, email, password, isGoogleLogin) => {
                             });
                         }).catch(error => {
                             console.log(error);
+                            dispatch(authFailed(error.response.data.message));
                         });
                     }).catch(err => {
                         console.log('Token not found', err);
@@ -82,9 +83,11 @@ export const login = (userType, email, password, isGoogleLogin) => {
                             });
                         }).catch(error => {
                             console.log(error);
+                            dispatch(authFailed(error.response.data.message));
                         });
                     }).catch(err => {
                         console.log('Token not found', err);
+                        dispatch(authFailed(err));
                     });
 
                 })
@@ -108,61 +111,32 @@ export const login = (userType, email, password, isGoogleLogin) => {
         }
     };
 };
-// export const continueWithGoogle = () => {
-//     var provider = new firebase.auth.FacebookAuthProvider();
-//     console.log(userType, email, password,);
-//     return dispatch => {
-//         console.log('Starting the signin process');
-//         dispatch(authStart());
-//         if (email !== '' && password !== '') {
-//             console.log();
-//             firebase.auth().signInWithEmailAndPassword(email, password).then(
-//                 (userCredential) => {
-//                     console.log(userCredential);
-//                     firebase.auth().currentUser.getIdToken(true).then(token => {
-//                         axios.post('/login', {
-//                             role: userType
-//                         }, {
-//                             headers: {
-//                                 'Authorization': `Bearer ${token}`
-//                             }
-//                         }).then(res => {
-//                             console.log('login successfull');
-//                             console.log(res.data);
-//                             firebase.auth().signOut().then(response => {
-//                                 if (userType === 'user')
-//                                     dispatch(authSuccess(res.data.user, null, 'user'));
-//                                 if (userType === 'restaurant')
-//                                     dispatch(authSuccess(null, res.data.restaurant, 'restaurant'));
-//                             });
-//                         }).catch(error => {
-//                             console.log(error);
-//                         });
-//                     }).catch(err => {
-//                         console.log('Token not found', err);
-//                     });
-
-//                 })
-//                 .catch(error => {
-//                     var errorCode = error.code;
-//                     var errorMessage = error.message;
-//                     if (errorCode === 'auth/wrong-password') {
-//                         alert('Wrong Password');
-//                     } else
-//                         if (errorCode === 'auth/invalid-email') {
-//                             alert('Invalid Email');
-//                         } else
-//                             if (errorCode === 'auth/user-not-found') {
-//                                 alert('User Not Found');
-//                             } else {
-//                                 alert(errorMessage);
-//                             }
-//                     dispatch(authFailed(errorMessage));
-//                     console.log(error);
-//                 });
-//         }
-//     };
-// };
+export const customLogin = (userType, idToken) => {
+    return dispatch => {
+        console.log('Starting the signin cutomLogin process');
+        dispatch(authStart());
+        axios.post('/customLogin', {
+            role: userType
+        }, {
+            headers: {
+                'Authorization': `Bearer ${idToken}`
+            }
+        }).then(res => {
+            console.log('login successfull');
+            console.log(res.data);
+            firebase.auth().signOut().then(response => {
+                if (userType === 'user')
+                    dispatch(authSuccess(res.data.user, null, 'user'));
+                if (userType === 'restaurant')
+                    dispatch(authSuccess(null, res.data.restaurant, 'restaurant'));
+            });
+        }).catch(error => {
+            console.log(error);
+            console.log(error.response);
+            dispatch(authFailed(error.response.data.message));
+        });
+    };
+};
 export const authStart = () => {
 
     return {

@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from './store/actions/index';
-import firebase from './config/firebaseInit';
 import login from './Containers/login';
 import signup from './Containers/signup';
 import foodies from './Containers/foodies';

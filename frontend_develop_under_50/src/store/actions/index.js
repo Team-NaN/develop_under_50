@@ -1,1 +1,1 @@
-export { logout, setAuthRedirectPath, authCheckState, signup, login } from './authentication'
+export { logout, setAuthRedirectPath, authCheckState, signup, login, customLogin } from './authentication'

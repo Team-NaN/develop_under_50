@@ -32,7 +32,7 @@ const signup = async (req, res, next) => {
                 const newRestaurantRes = await newRestaurant.save();
                 const accessToken = await generateToken(req.body.role, newRestaurant._id).accessToken;
                 res.cookie('accessToken', accessToken, { httpOnly: true });
-                return res.status(201).send({ success: true, message: 'Signup Successfull', restaurant: newRestaurant });
+                return res.status(201).send({ success: true, message: 'Signup Successfull', restaurant: newRestaurantRes });
 
             }
 
