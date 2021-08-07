@@ -6,26 +6,34 @@ const signup = async (req, res, next) => {
     try {
         const idToken = req.header('Authorization').replace('Bearer ', '');
         admin.auth().verifyIdToken(idToken).then(async (decodedToken) => {
+            console.log('Came inside singup');
             const uid = decodedToken.uid;
+            console.log(decodedToken.email);
+            console.log(req.body.role);
             if (req.body.role === 'user') {
                 const newUser = new User({
-                    _id: decodedToken.uid,
+                    uid: uid,
                     email: decodedToken.email,
+                    name: req.body.name
                 });
-                await newUser.save();
-                const accessToken = generateToken(role, newUser._id).accessToken;
+                newUserRes = await newUser.save();
+                console.log(newUserRes);
+                const accessToken = await generateToken(req.body.role, newUser._id).accessToken;
+                console.log(accessToken);
                 res.cookie('accessToken', accessToken, { httpOnly: true });
-                res.status(201).json({ success: true, message: 'Signup Successfull' });
+                return res.status(201).send({ success: true, message: 'Signup Successfull', user: newUserRes });
             }
             else if (req.body.role === 'restaurant') {
                 const newRestaurant = new Restaurant({
-                    _id: decodedToken.uid,
+                    uid: decodedToken.uid,
                     email: decodedToken.email,
+                    name: req.body.name
                 });
-                await newRestaurant.save();
-                const accessToken = generateToken(role, newRestaurant._id).accessToken;
+                const newRestaurantRes = await newRestaurant.save();
+                const accessToken = await generateToken(req.body.role, newRestaurant._id).accessToken;
                 res.cookie('accessToken', accessToken, { httpOnly: true });
-                res.status(201).json({ success: true, message: 'Signup Successfull' });
+                return res.status(201).send({ success: true, message: 'Signup Successfull', restaurant: newRestaurant });
+
             }
 
         }).catch((error) => {

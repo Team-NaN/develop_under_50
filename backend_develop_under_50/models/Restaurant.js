@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const pointSchema = require('./GeoPoint');
 const restaurantSchema = new mongoose.Schema({
+    uid: {
+        type: String,
+        required: true,
+    },
     name: {
         type: String,
         required: true,
@@ -41,7 +45,7 @@ const restaurantSchema = new mongoose.Schema({
     timestamps: true
 });
 
-restaurantSchema.index({ name: "text"})
+restaurantSchema.index({ name: "text" });
 
 const Restaurant = new mongoose.model('Restaurant', restaurantSchema);
 

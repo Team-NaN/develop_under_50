@@ -6,7 +6,7 @@ const { parseCookies } = require('../Utils/parseCookies');
 const auth = async (req, res, next) => {
 
     try {
-
+        console.log('came inside middleware');
         const token = parseCookies(req).accessToken;
         const decoded = await jwt.verify(token, process.env.JWT_SECRET, { algorithm: "HS256" });
         if (decoded.role === 'restaurant') {
@@ -25,7 +25,7 @@ const auth = async (req, res, next) => {
         next();
 
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
         res.status(401).send({ message: 'NOTOKEN', err: err });
     }
 

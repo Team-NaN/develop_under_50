@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const cartSchema = require('./Cart');
 const pointSchema = require('./GeoPoint');
 const userSchema = new mongoose.Schema({
+    uid: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true,

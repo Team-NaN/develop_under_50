@@ -11,9 +11,12 @@ const authStart = (state, action) => {
     return updateObject(state, { loading: true, error: null });
 };
 const authSuccess = (state, action) => {
+    console.log('inside auth success');
+    console.log(action);
     return updateObject(state, {
         loading: false,
-        error: null
+        error: null,
+        ...action
     });
 };
 const authFail = (state, action) => {

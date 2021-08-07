@@ -1,6 +1,168 @@
 import * as actionTypes from './actionTypes';
 import axios from '../../config/axios';
+import firebase from '../../config/firebaseInit';
+export const signup = (userType, name, email, password, isGoogleLogin) => {
+    console.log(userType, name, email, password,);
+    return dispatch => {
+        console.log('Starting the signin process');
+        if (email !== '' && password !== '') {
+            console.log();
+            firebase.auth().createUserWithEmailAndPassword(email, password).then(
+                (userCredential) => {
+                    console.log(userCredential);
+                    console.log(name);
+                    firebase.auth().currentUser.getIdToken(true).then(token => {
+                        axios.post('/signup', {
+                            role: userType,
+                            name: name
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        }).then(res => {
+                            console.log('signup successfull');
+                            console.log(res.data);
+                            firebase.auth().signOut().then(response => {
+                                if (userType === 'user')
+                                    dispatch(authSuccess(res.data.user, null, 'user'));
+                                if (userType === 'restaurant')
+                                    dispatch(authSuccess(null, res.data.restaurant, 'restaurant'));
 
+                            });
+                        }).catch(error => {
+                            console.log(error);
+                        });
+                    }).catch(err => {
+                        console.log('Token not found', err);
+                    });
+
+                })
+                .catch(error => {
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    if (errorCode === 'auth/email-already-in-use') {
+                        alert('Email Already in use');
+                    } else
+                        if (errorCode === 'auth/weak-password') {
+                            alert('The password is too weak.');
+                        } else {
+                            alert(errorMessage);
+                        }
+                    dispatch(authFailed(errorMessage));
+                    console.log(error);
+                });
+        }
+    };
+};
+export const login = (userType, email, password, isGoogleLogin) => {
+    console.log(userType, email, password,);
+    return dispatch => {
+        console.log('Starting the signin process');
+        dispatch(authStart());
+        if (email !== '' && password !== '') {
+            console.log();
+            firebase.auth().signInWithEmailAndPassword(email, password).then(
+                (userCredential) => {
+                    console.log(userCredential);
+                    firebase.auth().currentUser.getIdToken(true).then(token => {
+                        axios.post('/login', {
+                            role: userType
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        }).then(res => {
+                            console.log('login successfull');
+                            console.log(res.data);
+                            firebase.auth().signOut().then(response => {
+                                if (userType === 'user')
+                                    dispatch(authSuccess(res.data.user, null, 'user'));
+                                if (userType === 'restaurant')
+                                    dispatch(authSuccess(null, res.data.restaurant, 'restaurant'));
+                            });
+                        }).catch(error => {
+                            console.log(error);
+                        });
+                    }).catch(err => {
+                        console.log('Token not found', err);
+                    });
+
+                })
+                .catch(error => {
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    if (errorCode === 'auth/wrong-password') {
+                        alert('Wrong Password');
+                    } else
+                        if (errorCode === 'auth/invalid-email') {
+                            alert('Invalid Email');
+                        } else
+                            if (errorCode === 'auth/user-not-found') {
+                                alert('User Not Found');
+                            } else {
+                                alert(errorMessage);
+                            }
+                    dispatch(authFailed(errorMessage));
+                    console.log(error);
+                });
+        }
+    };
+};
+// export const continueWithGoogle = () => {
+//     var provider = new firebase.auth.FacebookAuthProvider();
+//     console.log(userType, email, password,);
+//     return dispatch => {
+//         console.log('Starting the signin process');
+//         dispatch(authStart());
+//         if (email !== '' && password !== '') {
+//             console.log();
+//             firebase.auth().signInWithEmailAndPassword(email, password).then(
+//                 (userCredential) => {
+//                     console.log(userCredential);
+//                     firebase.auth().currentUser.getIdToken(true).then(token => {
+//                         axios.post('/login', {
+//                             role: userType
+//                         }, {
+//                             headers: {
+//                                 'Authorization': `Bearer ${token}`
+//                             }
+//                         }).then(res => {
+//                             console.log('login successfull');
+//                             console.log(res.data);
+//                             firebase.auth().signOut().then(response => {
+//                                 if (userType === 'user')
+//                                     dispatch(authSuccess(res.data.user, null, 'user'));
+//                                 if (userType === 'restaurant')
+//                                     dispatch(authSuccess(null, res.data.restaurant, 'restaurant'));
+//                             });
+//                         }).catch(error => {
+//                             console.log(error);
+//                         });
+//                     }).catch(err => {
+//                         console.log('Token not found', err);
+//                     });
+
+//                 })
+//                 .catch(error => {
+//                     var errorCode = error.code;
+//                     var errorMessage = error.message;
+//                     if (errorCode === 'auth/wrong-password') {
+//                         alert('Wrong Password');
+//                     } else
+//                         if (errorCode === 'auth/invalid-email') {
+//                             alert('Invalid Email');
+//                         } else
+//                             if (errorCode === 'auth/user-not-found') {
+//                                 alert('User Not Found');
+//                             } else {
+//                                 alert(errorMessage);
+//                             }
+//                     dispatch(authFailed(errorMessage));
+//                     console.log(error);
+//                 });
+//         }
+//     };
+// };
 export const authStart = () => {
 
     return {
@@ -8,12 +170,19 @@ export const authStart = () => {
     };
 
 };
-export const authSuccess = (token, userId) => {
-
+export const authSuccess = (user, restaurant, role) => {
+    let state = {
+        role,
+        isAuthenticated: true
+    };
+    if (state.role === 'user')
+        state.user = user;
+    else
+        if (state.role === 'restaurant')
+            state.restaurant = restaurant;
     return {
         type: actionTypes.AUTH_SUCCESS,
-        idToken: token,
-        userId: userId
+        ...state
     };
 
 };
@@ -24,55 +193,10 @@ export const authFailed = (error) => {
     };
 };
 export const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('expirationDate');
-    localStorage.removeItem('userId');
     return {
         type: actionTypes.AUTH_LOGOUT
     };
 };
-const setAuthTimeout = (expiresIn) => {
-    return dispatch => {
-        setTimeout(() => {
-            dispatch(logout());
-        }, expiresIn * 1000);
-    };
-};
-export const auth = (email, password, isSignup) => {
-    return (dispatch, getState) => {
-        dispatch(authStart());
-        const authData = {
-            email: email,
-            password: password,
-            returnSecureToken: true
-        };
-        // console.log(authData)
-        let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBuiMJVQZECEk26OaSZbuY8FQxVHCuvtf8';
-        if (!isSignup)
-            url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBuiMJVQZECEk26OaSZbuY8FQxVHCuvtf8';
-        axios.post(url, authData)
-            .then(res => {
-                console.log(res);
-                const expirationDate = new Date(new Date().getTime() + res.data.expiresIn * 1000);
-                console.log(expirationDate);
-                // console.log(new Date())
-                // const time=new Date().getTime()
-                // console.log(time)
-                // console.log(res.data.expiresIn * 1000)
-                // console.log(new Date(time+res.data.expiresIn * 1000))
-                localStorage.setItem('token', res.data.idToken);
-                localStorage.setItem('expirationDate', expirationDate);
-                localStorage.setItem('userId', res.data.localId);
-                dispatch(authSuccess(res.data.idToken, res.data.localId));
-                dispatch(setAuthTimeout(res.data.expiresIn));
-            })
-            .catch(err => {
-                // console.log(err);
-                dispatch(authFailed(err.response.data.error));
-            });
-    };
-};
-
 export const setAuthRedirectPath = (path) => {
     return {
         type: actionTypes.SET_AUTH_REDIRECT_PATH,
@@ -82,30 +206,22 @@ export const setAuthRedirectPath = (path) => {
 
 export const authCheckState = () => {
     return dispatch => {
+        console.log('just before fetching');
         axios.get('/continueIfAuthenticated').then(res => {
             console.log(res);
-            dispatch({ type: 'Hello' });
+            console.log('authenticated');
+            if (res.data.user) {
+                dispatch(authSuccess(res.data.user, null, 'user'));
+            } else
+                if (res.data.restaurant) {
+                    dispatch(authSuccess(null, res.data.restaurant, 'user'));
+                }
+        }).catch(error => {
+            if (error.response.status === 401) {
+                console.log('not authenticated');
+                dispatch(logout());
+            }
         });
-        // const token = localStorage.getItem('token');
-        // if (!token) {
-        //     // console.log('token not found')
-        //     return dispatch(logout());
-        // }
-        // else {
-        //     const expirationDate = new Date(localStorage.getItem('expirationDate'));
-        //     if (expirationDate > new Date()) {
-        //         // console.log('came here')
-        //         const userId = localStorage.getItem('userId');
-        //         dispatch(authSuccess(token, userId));
-        //         // console.log(expirationDate)
-        //         // console.log(new Date())
-        //         // console.log('time ki masti',(expirationDate.getTime() - new Date().getTime())/1000)
-        //         dispatch(setAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000));
-        //     }
-        //     else {
-        //         // console.log('came here too somehow')
-        //         dispatch(logout());
-        //     }
-        // }
+
     };
 };
