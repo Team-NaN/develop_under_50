@@ -1,8 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
-console.log('Came inside firebase init ');
-console.log(process.env.REACT_APP_FIREBASE_API_KEY);
+
 const config = {
 
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -13,7 +12,6 @@ const config = {
     appId: process.env.REACT_APP_FIREBASE_APP_ID,
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
-console.log(process.env.REACT_APP_FIREBASE_API_KEY);
 firebase.initializeApp(config);
 //firebase.firestore().settings({timestampsInSnapShots:true});
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../store/actions/index';
+import firebase from '../config/firebaseInit';
 const Login = props => {
     useEffect(() => {
         if (!props.isAuthenticated) {
@@ -29,6 +30,21 @@ const Login = props => {
             props.onLogin(userType, email, password);
         }
     };
+    const googleSignInHandler = async (event) => {
+        event.preventDefault();
+        if (userType !== 'user' && userType !== 'restaurant') {
+            alert('Please select user type');
+            return;
+        }
+        const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+        const result = await firebase.auth().signInWithPopup(googleAuthProvider);
+        result.user.getIdToken().then(idToken => {
+            props.onCustomLogin(userType, idToken);
+        }).catch(error => {
+            console.log(error);
+        });
+
+    };
     return (
         <form>
             <h3>Log in</h3>
@@ -48,6 +64,13 @@ const Login = props => {
                 <input onChange={passwordChangedHandler} value={password} type="password" className="form-control" placeholder="Enter password" />
             </div>
             <button onClick={loginHandler} type="submit" className="btn btn-dark btn-lg btn-block">Sign in</button>
+            <div className="row">
+                <div className="col-md-12">
+                    <button onClick={googleSignInHandler} className="btn btn-lg btn-google btn-block text-uppercase btn-outline" >
+                        <img alt="Google" src="https://img.icons8.com/color/16/000000/google-logo.png" /> Continue with Google
+                    </button>
+                </div>
+            </div>
         </form>
     );
 };
@@ -62,7 +85,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onSetAuthRedirectPath: () => { dispatch(actions.setAuthRedirectPath('/')); },
-        onLogin: (email, password, isGoogleLogin) => { dispatch(actions.login(email, password, isGoogleLogin)); }
+        onLogin: (email, password, isGoogleLogin) => {
+            dispatch(actions.login(email, password, isGoogleLogin));
+        },
+        onCustomLogin: (userType, idToken) => {
+            dispatch(actions.customLogin(userType, idToken));
+        }
     };
 };
 
