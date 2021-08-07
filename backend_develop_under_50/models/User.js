@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 const cartSchema = require('./Cart');
 const pointSchema = require('./GeoPoint');
 const userSchema = new mongoose.Schema({
@@ -13,14 +12,9 @@ const userSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         required: false,
-        validate(email) {
-            if (!validator.isEmail(email)) {
-                throw new Error('Email provided is wrong');
-            }
-        }
     },
     profile: {
-        type: string,
+        type: String,
         required: false
     },
     cart: {

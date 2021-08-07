@@ -8,16 +8,14 @@ const cartSchema = new mongoose.Schema({
     },
     items: {
         type: [{
-            type: {
-                itemId: {
-                    type: mongoose.Schema.ObjectId,
-                    ref: 'Item',
-                    required: true,
-                },
-                quantity: {
-                    type: Number,
-                    required: true
-                }
+            itemId: {
+                type: mongoose.Schema.ObjectId,
+                ref: 'Item',
+                required: true,
+            },
+            quantity: {
+                type: Number,
+                required: true
             }
         }],
         required: false
@@ -30,6 +28,5 @@ const cartSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
-
-// const Cart = new mongoose.model('Cart', cartSchema);
 module.exports = cartSchema;
+// const Cart = new mongoose.model('Cart', cartSchema);

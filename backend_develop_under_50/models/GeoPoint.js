@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const pointSchema = new mongoose.Schema({
     type: {
         type: String,

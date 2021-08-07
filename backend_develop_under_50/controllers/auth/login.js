@@ -1,11 +1,11 @@
 const User = require('../../models/User');
 const Restaurant = require('../../models/Restaurant');
 const admin = require('../../config/firebaseInit');
-const { generateToken } = require('../../utils');
+const { generateToken } = require('../../Utils/generateToken');
 const login = async (req, res, next) => {
     try {
         const idToken = req.header('Authorization').replace('Bearer ', '');
-        admin.auth().verifyIdToken(idToken).then((decodedToken) => {
+        admin.auth().verifyIdToken(idToken).then(async (decodedToken) => {
             const uid = decodedToken.uid;
             if (req.body.role === 'user') {
                 const existingUser = await User.findOne({ _id: uid });

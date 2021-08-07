@@ -11,11 +11,6 @@ const restaurantSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         required: false,
-        validate(email) {
-            if (!validator.isEmail(email)) {
-                throw new Error('Email provided is wrong');
-            }
-        }
     },
     profile: {
         type: String,
