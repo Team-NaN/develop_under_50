@@ -58,7 +58,6 @@ let getRestaurant = async (req,res) => {
 
 let getRestaurantByName = async (req,res) => {
     let name = req.params.name;
-    console.log(name);
     try{    
         let restaurant = await Restaurant.fuzzySearch(name,1);
         res.status(200).json({
