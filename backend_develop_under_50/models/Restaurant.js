@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
+const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching');
 const pointSchema = require('./GeoPoint');
 const restaurantSchema = new mongoose.Schema({
-    uid: {
-        type: String,
-        required: true,
-    },
     name: {
         type: String,
         required: true,
@@ -15,6 +12,7 @@ const restaurantSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         required: false,
+        
     },
     profile: {
         type: String,
@@ -45,10 +43,10 @@ const restaurantSchema = new mongoose.Schema({
     timestamps: true
 });
 
-restaurantSchema.index({ name: "text" });
+restaurantSchema.index({ name: "text"})
+
+restaurantSchema.plugin(mongoose_fuzzy_searching, { fields: ['name'] });
 
 const Restaurant = new mongoose.model('Restaurant', restaurantSchema);
-
-
 
 module.exports = Restaurant;
