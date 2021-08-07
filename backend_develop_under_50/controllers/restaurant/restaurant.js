@@ -57,10 +57,10 @@ let getRestaurant = async (req,res) => {
 }
 
 let getRestaurantByName = async (req,res) => {
-    let name = req.params.name.split('%20').join(" ");
+    let name = req.params.name;
     console.log(name);
     try{    
-        let restaurant = await Restaurant.find({$text:{$search:name}});
+        let restaurant = await Restaurant.fuzzySearch(name,1);
         res.status(200).json({
             "success": true,
             restaurant
@@ -72,7 +72,6 @@ let getRestaurantByName = async (req,res) => {
             "error": e
         })
     }
-
 }
 
 
