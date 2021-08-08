@@ -180,7 +180,6 @@ export const setAuthRedirectPath = (path) => {
 
 export const authCheckState = () => {
     return dispatch => {
-        console.log('just before fetching');
         axios.get('/continueIfAuthenticated').then(res => {
             console.log(res);
             console.log('authenticated');
@@ -191,9 +190,12 @@ export const authCheckState = () => {
                     dispatch(authSuccess(null, res.data.restaurant, 'user'));
                 }
         }).catch(error => {
-            if (error.response.status === 401) {
-                console.log('not authenticated');
-                dispatch(logout());
+            console.log(error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    console.log('not authenticated');
+                    dispatch(logout());
+                }
             }
         });
 
