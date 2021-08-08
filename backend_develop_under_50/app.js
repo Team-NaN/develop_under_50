@@ -12,7 +12,7 @@ require('dotenv').config({ path: dotenvPath });
 require('./config/database');
 const cors = require('cors');
 var app = express();
-const whitelist = ['http://localhost:3000'];
+const whitelist = ['http://localhost:3000', 'https://develop-under-50.web.app/'];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   console.log(req.header('Origin'));
