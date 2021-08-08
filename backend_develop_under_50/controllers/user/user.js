@@ -9,12 +9,8 @@ var fs = require('fs');
 
 let updateCart = async (req, res) => {
     try {
-        let data = req.body;
-        let uid = req.body.userid; //! delete afterwards
-        //let user = req.user  //! uncomment afterwards
-        let user = await User.findOne({
-            '_id': uid
-        }); //! delete afterwards
+        let data = req.body; 
+        let user = req.user
         if (data.restaurantId == user.cart.restaurantId || !user.cart.restaurantId) {
             user.cart.restaurantId = data.restaurantId;
             user.cart.items.forEach(e => {
@@ -53,7 +49,7 @@ let updateCart = async (req, res) => {
 }
 
 let getCart = async (req,res) => {
-    let user = await User.findOne({"_id":req.body.userId}); //!delete afterwards
+    let user = req.user
     let cart = JSON.parse(JSON.stringify(user.cart))
     for(let i=0;i<cart.items.length;i++){
         let item = await Item.findOne({'_id':cart.items[i].itemId});
@@ -213,7 +209,7 @@ let generatePDF = async (invoice, restaurant, user, path, res) => {
 }
 
 let generateOrder = async (req,res) => {
-    let user = await User.findOne({"_id":req.body.userId}); //!delete afterwards
+    let user = req.user 
     let cart = JSON.parse(JSON.stringify(user.cart))
     let final_amount = 0
     for(let i=0;i<cart.items.length;i++){
@@ -234,12 +230,12 @@ let getInvoice = async (req, res) => {
     let orderId = req.body.orderId;
     let order = await Order.findOne({"_id":orderId});
     let restaurant = await Restaurant.findOne({"_id":order.restaurantId});
-    let user = await User.findOne({"_id":req.body.userId});
+    let user = req.user
     await generatePDF(order,restaurant,user,__dirname+'\\temp\\invoice.pdf',res);
 }
 
 let getAllOrders = async (req,res)=>{
-  let userid = req.body.userid //! delete afterwards
+  let userid = req.user._id
   try{
     let orders = await Order.find({'userId':userid});
     res.status(200).json({
