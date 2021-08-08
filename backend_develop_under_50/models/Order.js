@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
 
+const cartItemSchema = new mongoose.Schema({
+    item: {
+        type: String
+    },
+    quantity: {
+        type: Number
+    },
+    itemId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Item'
+    },
+    unitPrice: {
+        type: Number
+    }
+})
+
 const orderSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
@@ -11,32 +27,8 @@ const orderSchema = new mongoose.Schema({
         ref: 'Restaurant',
         required: true,
     },
-    items: {
-        type: [{
-            type: {
-                itemId: {
-                    type: mongoose.Schema.ObjectId,
-                    ref: 'Item',
-                    required: true,
-                },
-                quantity: {
-                    type: Number,
-                    required: true
-                }
-            }
-        }],
-        required: true
-    },
-    amount: {
-        type: Number,
-        required: true
-    },
-    pending: {
-        type: Boolean,
-        required: true,
-        default: true
-    }
-
+    items: [cartItemSchema],
+    final_amount: {type: Number, required: true},
 }, {
     timestamps: true
 });
