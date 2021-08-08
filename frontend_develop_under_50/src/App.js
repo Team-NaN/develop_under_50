@@ -12,8 +12,12 @@ const App = (props) => {
   useEffect(() => {
     onTryAutoSignup();
   }, [onTryAutoSignup]);
-
-  let routes = (
+  const routesAuthenticated = (
+    <Switch>
+      <Route path="/" exact component={foodies} />
+    </Switch>
+  );
+  const routesNonAuthenticated = (
     <>
       <nav className="navbar navbar-expand-lg navbar-light fixed-top">
         <div className="container">
@@ -36,19 +40,15 @@ const App = (props) => {
             <Route path="/" exact component={login} />
             <Route path="/signin" exact component={login} />
             <Route path="/signup" component={signup} />
-            <Redirect to='/'></Redirect>
           </Switch>
         </div>
       </div>
     </>
   );
-  if (props.isAuthenticated) {
-    routes = (<Switch>
-      <Route path="/" exact component={foodies} />
-      <Redirect to='/'></Redirect></Switch>);
-  } return (
+
+  return (
     <div className="App">
-      {routes}
+      {props.isAuthenticated ? routesAuthenticated : routesNonAuthenticated}
     </div>
   );
 };
