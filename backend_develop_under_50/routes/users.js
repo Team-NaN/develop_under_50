@@ -11,12 +11,12 @@ router.get('/signup', function (req, res, next) {
 router.put('/userDetails', authMiddleware, userDetails);
 router.post('/update/cart', authMiddleware, updateCart);
 
-router.get('/get/cart', getCart);
+router.get('/get/cart', authMiddleware,getCart);
 
-router.post('/place/order', generateOrder);
+router.post('/place/order', authMiddleware, generateOrder);
 
-router.post('/get/invoice', getInvoice);
+router.post('/get/invoice', authMiddleware, getInvoice);
 
-router.get('/get/all/order', getAllOrders);
+router.get('/get/all/order', authMiddleware, getAllOrders);
 
 module.exports = router;
